@@ -1,4 +1,4 @@
-// This code will pull Woocommerce brands description to single product page
+// This code will pull Woocommerce Kadence brands description to single product page
 // add brands description to products
 function get_current_product_brand_description() {
     global $product;
