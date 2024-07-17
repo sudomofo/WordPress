@@ -1,0 +1,45 @@
+// This code will pull Woocommerce brands description to single product page
+// add brands description to products
+function get_current_product_brand_description() {
+    global $product;
+
+    // Check if we are on a single product page
+    if ( ! is_product() ) {
+        return ''; // Return an empty string if not on a single product page
+    }
+
+    if ( ! $product ) {
+        $product_id = get_the_ID(); // Get the product ID from the post ID
+        $product = wc_get_product( $product_id );
+    }
+
+    if ( ! $product ) {
+        return ''; // Return an empty string if the product is not found
+    }
+
+    // Get the terms for the product in the 'product_brand' taxonomy
+    $brand_terms = get_the_terms( $product->get_id(), 'product_brands' );
+
+    if ( ! $brand_terms || is_wp_error( $brand_terms ) ) {
+        return ''; // Return an empty string if no brand terms are found
+    }
+
+    // Get the first brand term (assuming there's only one brand per product)
+    $brand_term = $brand_terms[0];
+
+    // Get the description of the brand term
+    $brand_description = term_description( $brand_term->term_id, 'product_brands' );
+
+    return $brand_description;
+}
+
+// Usage example: Display the brand description on the single product page
+add_action( 'woocommerce_single_product_summary', 'display_brand_description_on_single_product', 20 );
+
+function display_brand_description_on_single_product() {
+    $brand_description = get_current_product_brand_description();
+
+    if ( ! empty( $brand_description ) ) {
+        echo '<div class="product-brand-description">' . $brand_description . '</div>';
+    }
+}
