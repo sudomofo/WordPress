@@ -1,0 +1,12 @@
+add_filter('woocommerce_product_export_columns', 'add_custom_export_column');
+function add_custom_export_column($columns) {
+    $columns['permalink'] = 'Permalink';
+    return $columns;
+}
+
+add_filter('woocommerce_product_export_product_default_columns', 'add_custom_export_column');
+add_filter('woocommerce_product_export_product_column_permalink', 'populate_custom_export_column', 10, 2);
+
+function populate_custom_export_column($value, $product) {
+    return get_permalink($product->get_id());
+}
