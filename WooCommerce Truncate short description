@@ -1,0 +1,13 @@
+function custom_truncated_product_short_description() {
+    if (is_shop() || is_product_category() || is_product_tag()) { // Ensures we're on a catalog page
+        global $post;
+        $short_description = apply_filters('the_excerpt', $post->post_excerpt);
+        $limit = 250; // Maximum characters to show
+        if (mb_strlen($short_description, 'UTF-8') > $limit) {
+            $short_description = mb_substr($short_description, 0, $limit, 'UTF-8') . '...';
+        }
+        echo '<div class="custom-short-description">' . $short_description . '</div>';
+    }
+}
+
+add_action('woocommerce_shop_loop_item_title', 'custom_truncated_product_short_description', 40);
