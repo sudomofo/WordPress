@@ -1,0 +1,43 @@
+add_action('pre_get_posts', 'extend_woocommerce_search_by_brand');
+
+function extend_woocommerce_search_by_brand($query) {
+    // Check if it's a frontend product search query
+    if (!is_admin()
+        && $query->is_main_query()
+        && $query->is_search()
+        && isset($query->query_vars['post_type'])
+        && $query->query_vars['post_type'] === 'product') {
+        
+        // Get the search query string
+        $search_query = sanitize_text_field($query->get('s'));
+
+        // Attempt to find a matching term in the 'pa_brand' taxonomy
+        $brand_term = get_term_by('slug', sanitize_title($search_query), 'pa_brand');
+
+        if ($brand_term) {
+            // Remove the 's' parameter to avoid conflicts
+            $query->set('s', '');
+
+            // Get any existing tax_query from the query
+            $tax_query = (array) $query->get('tax_query');
+
+            // Append the brand term to the tax query
+            $tax_query[] = [
+                'taxonomy' => 'pa_brand',
+                'field'    => 'slug',
+                'terms'    => $brand_term->slug,
+                'operator' => 'IN',
+            ];
+
+            // Apply the modified tax query back to the query
+            $query->set('tax_query', $tax_query);
+        }
+    }
+}
+// //For debug log on search Query
+// add_action( 'pre_get_posts', 'debug_search_query', 20 );
+// function debug_search_query( $query ) {
+//     if ( $query->is_search() && ! is_admin() && $query->get('post_type') === 'product' ) {
+//         error_log( print_r( $query, true ) );
+//     }
+// }
