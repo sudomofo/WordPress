@@ -1,3 +1,7 @@
+// This will add pa_brand attribute as a query, and will list all the product under the matching slug
+// the taxonomy need to set to archievable in order be queryable
+// 
+
 add_action('pre_get_posts', 'extend_woocommerce_search_by_brand');
 
 function extend_woocommerce_search_by_brand($query) {
